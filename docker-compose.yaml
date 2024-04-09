@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  back:
+    image: matasvaitk/the-block-back:v1
+    environment:
+      REDIS_SERVER: redis:6379
+    ports:
+      - "4000:4000"
+    depends_on:
+      - redis
+
+  front:
+    image: matasvaitk/the-block-front:v1
+    environment:
+      BACKEND_API_URL: http://back:4000
+      CLIENT_API_URL: http://13.53.95.253:4000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - back
