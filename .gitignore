@@ -88,3 +88,18 @@ sw.*
 
 # Vim swap files
 *.swp
+
+# Ignore Terraform state files
+*.tfstate
+*.tfstate.*
+terraform.tfstate.backup
+
+# Ignore .terraform directory
+.terraform/
+
+# Ignore any sensitive files (like `.tfvars` containing secrets)
+*.tfvars
+
+# Ignore any generated files
+*.plan
+*.log

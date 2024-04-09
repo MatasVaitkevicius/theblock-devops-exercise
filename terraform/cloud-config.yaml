@@ -1,0 +1,26 @@
+#cloud-config
+
+# Update and install necessary packages
+package_update: true
+packages:
+  - docker
+  - git
+
+runcmd:
+  # Start and enable Docker
+  - systemctl start docker
+  - systemctl enable docker
+
+  # Add the default user to the Docker group
+  - usermod -aG docker $USER
+
+  # Install Docker Compose (Replace "1.29.2" with the desired version)
+  - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - chmod +x /usr/local/bin/docker-compose
+
+  # Download docker-compose.yaml and nginx.conf from GitHub
+  - curl -L "https://raw.githubusercontent.com/yourgithubuser/yourrepository/main/docker-compose.yaml" -o .
+  - curl -L "https://raw.githubusercontent.com/yourgithubuser/yourrepository/main/nginx.conf" -o .
+
+  # Start Docker Compose
+  - docker-compose up -d

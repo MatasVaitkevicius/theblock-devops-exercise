@@ -36,4 +36,3 @@ jobs:
         file: ./front/Dockerfile
         push: true
         tags: matasvaitk/the-block-front:latest
-
