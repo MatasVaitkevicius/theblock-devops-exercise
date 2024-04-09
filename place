@@ -53,16 +53,15 @@ resource "aws_instance" "web" {
     runcmd:
       - systemctl start docker
       - systemctl enable docker
-      - usermod -aG docker ec2-user
+      - usermod -aG docker $USER
+      - sudo usermod -aG docker ec2-user
       - curl -L "${var.docker_compose_url}" -o /usr/local/bin/docker-compose
       - chmod +x /usr/local/bin/docker-compose
-      - curl -L "${var.compose_file_url}" -o /home/ec2-user/docker-compose.yaml
-      - curl -L "${var.nginx_conf_url}" -o /home/ec2-user/nginx.conf
-      - |
-        TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-        EC2_PUBLIC_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
-        sed -i "s/{EC2_PUBLIC_IP}/$EC2_PUBLIC_IP/g" /home/ec2-user/docker-compose.yaml
-      - cd /home/ec2-user/ && docker-compose up -d
+      - curl -L "${var.compose_file_url}" -o /root/docker-compose.yaml
+      - curl -L "${var.nginx_conf_url}" -o /root/nginx.conf
+      - EC2_PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+      - sed -i "s/{EC2_PUBLIC_IP}/$EC2_PUBLIC_IP/g" /root/docker-compose.yaml
+      - cd root/ && docker-compose up -d
     EOF
 
   tags = {

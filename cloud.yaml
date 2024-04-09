@@ -1,0 +1,15 @@
+    #cloud-config
+    package_update: true
+    packages:
+      - docker
+      - git
+    runcmd:
+      - systemctl start docker
+      - systemctl enable docker
+      - usermod -aG docker ec2-user
+      - curl -L "${var.docker_compose_url}" -o /usr/local/bin/docker-compose
+      - chmod +x /usr/local/bin/docker-compose
+      - TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+      - EC2_PUBLIC_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
+      - sed -i "s/{EC2_PUBLIC_IP}/$EC2_PUBLIC_IP/g" /home/ec2-user/docker-compose.yaml
+      - cd /home/ec2-user/ && docker-compose up -d
