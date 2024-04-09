@@ -56,8 +56,10 @@ resource "aws_instance" "web" {
       - usermod -aG docker $USER
       - curl -L "${var.docker_compose_url}" -o /usr/local/bin/docker-compose
       - chmod +x /usr/local/bin/docker-compose
-      - curl -L "${var.compose_file_url}" -o .
-      - curl -L "${var.nginx_conf_url}" -o .
+      - curl -L "${var.compose_file_url}" -o ./docker-compose.yaml
+      - curl -L "${var.nginx_conf_url}" -o ./nginx.conf
+      - EC2_PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+      - sed -i "s/{EC2_PUBLIC_IP}/$EC2_PUBLIC_IP/g" ./docker-compose.yaml
       - docker-compose up -d
     EOF
 

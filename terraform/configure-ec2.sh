@@ -21,8 +21,14 @@ sudo curl -L "$DOCKER_COMPOSE_URL" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
 # Download docker-compose.yaml and nginx.conf
-sudo curl -L "$COMPOSE_FILE_URL" -o .
-sudo curl -L "$NGINX_CONF_URL" -o .
+sudo curl -L "$COMPOSE_FILE_URL" -o ./docker-compose.yaml
+sudo curl -L "$NGINX_CONF_URL" -o ./docker-compose.yaml
+
+# Get the public IP address of the EC2 instance
+EC2_PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+
+# Replace the placeholder with the actual IP address
+sed -i "s/{EC2_PUBLIC_IP}/$EC2_PUBLIC_IP/g" ./docker-compose.yaml
 
 # Start Docker Compose
 sudo docker-compose up -d
