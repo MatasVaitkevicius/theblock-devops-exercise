@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Pull and Update Containers on EC2
 
 on:
   workflow_dispatch:
@@ -8,20 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Copy project files
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        port: 22
-        source: "."
-        target: "/home/ec2-user/"
-
-    - name: Run Docker Compose
+    - name: Run Docker Compose on EC2
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -29,5 +16,5 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: 22
         script: |
-          docker-compose -f /home/ec2-user/docker-compose.yml pull
-          docker-compose -f /home/ec2-user/docker-compose.yml up -d --build
+          docker-compose pull
+          docker-compose up -d --build
