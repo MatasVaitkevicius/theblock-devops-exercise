@@ -1,0 +1,28 @@
+name: Setup Terraform Backend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup_backend:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: eu-north-1  # Environment variable for the AWS region
+      AWS_BUCKET_NAME: the-block-crypto-state-bucket  # S3 Bucket name
+      AWS_DYNAMO_TABLE: the-block-crypto-table  # DynamoDB Table name
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Run setup script
+        run: |
+          chmod +x ./terraform/script/create-tf-backend.sh
+          ./terraform/script/create-tf-backend.sh
