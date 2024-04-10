@@ -2,6 +2,16 @@ provider "aws" {
   region = var.region
 }
 
+terraform {
+  backend "s3" {
+    bucket         = "the-block-crypto-state-bucket"
+    key            = "terraform/state"
+    region         = "eu-north-1"
+    encrypt        = true
+    dynamodb_table = "the-block-crypto-table"
+  }
+}
+
 data "http" "my_ip" {
   url = "https://api.ipify.org"
 }
