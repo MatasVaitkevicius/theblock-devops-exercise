@@ -6,11 +6,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Copy files and restart docker containers
+    - name: Copy project files
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -18,9 +19,9 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: 22
         source: "."
-        target: "/path/to/your/app"
+        target: "/home/ec2-user/"
 
-    - name: SSH and Docker Compose Pull and Up
+    - name: Run Docker Compose
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -28,6 +29,5 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: 22
         script: |
-          cd /path/to/your/app
-          docker-compose pull
-          docker-compose up -d --build
+          docker-compose -f /home/ec2-user/docker-compose.yml pull
+          docker-compose -f /home/ec2-user/docker-compose.yml up -d --build
