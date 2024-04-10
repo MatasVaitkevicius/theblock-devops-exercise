@@ -1,10 +1,10 @@
-name: Create Terraform Backend
+name: Destroy Terraform Backend
 
 on:
   workflow_dispatch:
 
 jobs:
-  create_terraform_backend:
+  destroy_terraform_backend:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: eu-north-1
@@ -24,5 +24,5 @@ jobs:
 
     - name: Run setup script
       run: |
-        chmod +x ./terraform/scripts/create-tf-backend.sh
-        ./terraform/scripts/create-tf-backend.sh
+        chmod +x ./terraform/scripts/destroy-tf-backend.sh
+        ./terraform/scripts/destroy-tf-backend.sh
