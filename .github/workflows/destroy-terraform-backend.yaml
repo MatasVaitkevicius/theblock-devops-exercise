@@ -2,6 +2,11 @@ name: Destroy Terraform Backend
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "destroy" to confirm destruction of Terraform state backend'
+        required: true
+        default: 'type "destroy" here'
 
 jobs:
   destroy_terraform_backend:
