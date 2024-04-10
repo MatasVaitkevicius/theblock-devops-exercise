@@ -1,4 +1,4 @@
-name: 'Terraform'
+name: 'Create Terraform Infrastructure'
 
 on:
   workflow_dispatch:
