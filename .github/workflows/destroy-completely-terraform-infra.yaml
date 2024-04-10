@@ -1,0 +1,75 @@
+name: 'Comprehensive Terraform Destruction'
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_infrastructure:
+        description: 'Type "destroy-infrastructure" to confirm destruction of Terraform-managed infrastructure'
+        required: true
+        default: 'type "destroy-infrastructure" here'
+
+jobs:
+  terraform_destroy:
+    name: 'Terraform Destroy'
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm_infrastructure == 'destroy-infrastructure'
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      DOCKER_COMPOSE_URL: ${{ secrets.DOCKER_COMPOSE_URL }}
+      COMPOSE_FILE_URL: ${{ secrets.COMPOSE_FILE_URL }}
+      NGINX_CONF_URL: ${{ secrets.NGINX_CONF_URL }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: '1.7.5'
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: terraform
+
+    - name: Terraform Destroy
+      run: |
+        terraform destroy -auto-approve \
+          -var="docker_compose_url=${{ env.DOCKER_COMPOSE_URL }}" \
+          -var="compose_file_url=${{ env.COMPOSE_FILE_URL }}" \
+          -var="nginx_conf_url=${{ env.NGINX_CONF_URL }}" \
+          -var="region=${{ env.AWS_DEFAULT_REGION }}"
+      working-directory: terraform
+
+    - name: Confirm Destruction
+      run: echo "Infrastructure destroyed successfully."
+
+  destroy_terraform_backend:
+    runs-on: ubuntu-latest
+    needs: terraform_destroy
+    if: github.event.inputs.confirm_backend == 'destroy-backend'
+    env:
+      AWS_REGION: eu-north-1
+      AWS_BUCKET_NAME: the-block-crypto-state-bucket
+      AWS_DYNAMO_TABLE: the-block-crypto-table
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Run destruction script for Terraform backend
+      run: |
+        chmod +x ./terraform/scripts/destroy-tf-backend.sh
+        ./terraform/scripts/destroy-tf-backend.sh
+
+    - name: Confirm Backend Destruction
+      run: echo "Terraform state backend destroyed successfully."
