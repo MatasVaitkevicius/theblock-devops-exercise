@@ -18,13 +18,13 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      DOCKER_COMPOSE_URL: ${{ secrets.DOCKER_COMPOSE_URL }}
+      COMPOSE_FILE_URL: ${{ secrets.COMPOSE_FILE_URL }}
+      NGINX_CONF_URL: ${{ secrets.NGINX_CONF_URL }}
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Change to Terraform directory
-      run: cd terraform
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
@@ -33,13 +33,16 @@ jobs:
 
     - name: Terraform Init
       run: terraform init
+      working-directory: terraform
 
     - name: Terraform Destroy
-      run: terraform destroy -auto-approve
-      env:
-        TF_VAR_docker_compose_url: ${{ secrets.DOCKER_COMPOSE_URL }}
-        TF_VAR_compose_file_url: ${{ secrets.COMPOSE_FILE_URL }}
-        TF_VAR_nginx_conf_url: ${{ secrets.NGINX_CONF_URL }}
+      run: |
+        terraform destroy -auto-approve \
+          -var="docker_compose_url=${{ env.DOCKER_COMPOSE_URL }}" \
+          -var="compose_file_url=${{ env.COMPOSE_FILE_URL }}" \
+          -var="nginx_conf_url=${{ env.NGINX_CONF_URL }}" \
+          -var="region=${{ env.AWS_DEFAULT_REGION }}"
+      working-directory: terraform
 
     - name: Confirm Destruction
       run: echo "Infrastructure destroyed successfully."

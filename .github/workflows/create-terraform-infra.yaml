@@ -35,7 +35,7 @@ jobs:
         terraform plan -var="docker_compose_url=${{ env.DOCKER_COMPOSE_URL }}" \
                        -var="compose_file_url=${{ env.COMPOSE_FILE_URL }}" \
                        -var="nginx_conf_url=${{ env.NGINX_CONF_URL }}" \
-                       -var="region=${{ env.AWS_REGION }}" \
+                       -var="region=${{ env.AWS_DEFAULT_REGION }}" \
                        -out=plan.out
       working-directory: terraform
       continue-on-error: true
@@ -46,5 +46,5 @@ jobs:
         terraform apply -auto-approve -var="docker_compose_url=${{ env.DOCKER_COMPOSE_URL }}" \
                                         -var="compose_file_url=${{ env.COMPOSE_FILE_URL }}" \
                                         -var="nginx_conf_url=${{ env.NGINX_CONF_URL }}" \
-                                        -var="region=${{ env.AWS_REGION }}"
+                                        -var="region=${{ env.AWS_DEFAULT_REGION }}"
       working-directory: terraform
