@@ -24,7 +24,6 @@ jobs:
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: '1.7.5'
-      working-directory: terraform
 
     - name: Terraform Init
       run: terraform init
@@ -46,4 +45,4 @@ jobs:
         terraform apply -auto-approve -var="docker_compose_url=${{ env.DOCKER_COMPOSE_URL }}" \
                                         -var="compose_file_url=${{ env.COMPOSE_FILE_URL }}" \
                                         -var="nginx_conf_url=${{ env.NGINX_CONF_URL }}"
-      working-directory: terraform
+      working-directory: terraform # This line should be indented at the same level as the "run" keyword
