@@ -20,16 +20,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Change to Terraform directory
-      run: cd terraform
-
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: '1.7.5'
+      working-directory: terraform
 
     - name: Terraform Init
       run: terraform init
+      working-directory: terraform
 
     - name: Terraform Plan
       id: plan
@@ -38,11 +37,13 @@ jobs:
                        -var="compose_file_url=${{ env.COMPOSE_FILE_URL }}" \
                        -var="nginx_conf_url=${{ env.NGINX_CONF_URL }}" \
                        -out=plan.out
+      working-directory: terraform
       continue-on-error: true
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.plan.outcome == 'success'
       run: |
         terraform apply -auto-approve -var="docker_compose_url=${{ env.DOCKER_COMPOSE_URL }}" \
-                                      -var="compose_file_url=${{ env.COMPOSE_FILE_URL }}" \
-                                      -var="nginx_conf_url=${{ env.NGINX_CONF_URL }}"
+                                        -var="compose_file_url=${{ env.COMPOSE_FILE_URL }}" \
+                                        -var="nginx_conf_url=${{ env.NGINX_CONF_URL }}"
+      working-directory: terraform
