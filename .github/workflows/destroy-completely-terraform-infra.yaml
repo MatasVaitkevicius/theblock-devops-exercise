@@ -7,6 +7,10 @@ on:
         description: 'Type "destroy-infrastructure" to confirm destruction of Terraform-managed infrastructure'
         required: true
         default: 'type "destroy-infrastructure" here'
+      confirm_backend:
+        description: 'Type "destroy-backend" to confirm destruction of Terraform state backend'
+        required: true
+        default: 'type "destroy-backend" here'
 
 jobs:
   terraform_destroy:
