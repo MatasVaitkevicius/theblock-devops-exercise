@@ -41,7 +41,7 @@ jobs:
       continue-on-error: true
 
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.plan.outcome == 'success'
+      if: steps.plan.outcome == 'success'
       run: |
         terraform apply -auto-approve -var="docker_compose_url=${{ env.DOCKER_COMPOSE_URL }}" \
                                         -var="compose_file_url=${{ env.COMPOSE_FILE_URL }}" \
