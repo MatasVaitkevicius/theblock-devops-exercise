@@ -24,5 +24,5 @@ jobs:
 
       - name: Run setup script
         run: |
-          chmod +x ./terraform/script/create-tf-backend.sh
-          ./terraform/script/create-tf-backend.sh
+          chmod +x theblock-devops-exercise/terraform/script/create-tf-backend.sh
+          theblock-devops-exercise/terraform/script/create-tf-backend.sh
